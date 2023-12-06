@@ -14,6 +14,7 @@ export default function Home() {
   const [userInput, setUserInput] = useState("");
 
   function handleContinue() {
+    setUserInput((prev) => prev.trim());
     if (userInput != "") {
       setIsPlaying((prev) => !prev);
     }
@@ -34,7 +35,7 @@ export default function Home() {
       }}
     >
       {userInput && isPlaying ? (
-        <TilesList />
+        <TilesList userInput={userInput} numberOfTries={5} />
       ) : (
         <PlayerInput
           value={userInput}

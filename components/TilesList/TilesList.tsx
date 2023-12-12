@@ -5,6 +5,7 @@ import { Tile } from "../Tile/Tile";
 interface Props {
   wordToPlay: string;
   numberOfTries: number;
+  suggestion?: string;
 }
 
 type ITry = ICharacter[];
@@ -23,7 +24,11 @@ const emptyCharacter: ICharacter = {
   alreadySpinned: false,
 };
 
-export const TilesList: React.FC<Props> = ({ wordToPlay, numberOfTries }) => {
+export const TilesList: React.FC<Props> = ({
+  wordToPlay,
+  numberOfTries,
+  suggestion,
+}) => {
   const [playerInput, setPlayerInput] = useState<{
     value: string;
     index: number;
@@ -113,8 +118,26 @@ export const TilesList: React.FC<Props> = ({ wordToPlay, numberOfTries }) => {
   function handleSpinner(i: number, j: number) {
     rowsOfTries[i][j].alreadySpinned = true;
   }
+
+  function getSuggestion() {
+    return (
+      <Grid
+        item
+        sx={{
+          background: "rgba(0,0,0,0.1)",
+          borderRadius: "25px",
+          width: "80%",
+          textAlign: "center",
+        }}
+      >
+        <h2>If you want to succeed, try to think in:</h2>
+        <h3>{suggestion}</h3>
+      </Grid>
+    );
+  }
   return (
     <Grid container direction={"column"} sx={{ alignItems: "center", gap: 5 }}>
+      {suggestion && getSuggestion()}
       {rowsOfTries &&
         rowsOfTries.map((singleTry, i) => (
           <Fragment key={`${i}-${Math.random()}`}>

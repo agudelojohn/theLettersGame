@@ -5,16 +5,30 @@ const textColor = "#002590";
 
 interface Props {
   value: string;
-  onChange: (event: any) => void;
+  suggestion?: string;
+  onChangeValue: (event: any) => void;
+  onChangeSuggestion?: (event: any) => void;
   onClick: () => void;
 }
 
-export const PlayerInput: React.FC<Props> = ({ value, onChange, onClick }) => {
-  function hanldleOnChange(
+export const PlayerInput: React.FC<Props> = ({
+  value,
+  suggestion,
+  onChangeValue,
+  onChangeSuggestion,
+  onClick,
+}) => {
+  function hanldleOnChangeValue(
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) {
-    onChange(event.target.value);
+    onChangeValue(event.target.value);
   }
+  function hanldleOnChangeSuggestion(
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) {
+    if (onChangeSuggestion) onChangeSuggestion(event.target.value);
+  }
+
   return (
     <Card
       sx={{
@@ -36,11 +50,19 @@ export const PlayerInput: React.FC<Props> = ({ value, onChange, onClick }) => {
       </Typography>
       <TextField
         id="standard-basic"
-        label="To play"
+        label="Word to play"
         variant="standard"
         sx={{ width: "100%" }}
         value={value}
-        onChange={hanldleOnChange}
+        onChange={hanldleOnChangeValue}
+      />
+      <TextField
+        id="standard-basic"
+        label="Want to add some suggestion or help?"
+        variant="standard"
+        sx={{ width: "100%" }}
+        value={suggestion}
+        onChange={hanldleOnChangeSuggestion}
       />
       <Button
         variant="outlined"

@@ -12,6 +12,7 @@ const metadata: Metadata = {
 export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [userInput, setUserInput] = useState("");
+  const [userSuggestion, setUserSuggestion] = useState("");
 
   function handleContinue() {
     setUserInput((prev) => prev.trim());
@@ -35,12 +36,18 @@ export default function Home() {
       }}
     >
       {userInput && isPlaying ? (
-        <TilesList wordToPlay={userInput} numberOfTries={5} />
+        <TilesList
+          wordToPlay={userInput}
+          numberOfTries={5}
+          suggestion={userSuggestion}
+        />
       ) : (
         <PlayerInput
           value={userInput}
-          onChange={(e) => setUserInput(e)}
+          onChangeValue={(e) => setUserInput(e)}
           onClick={handleContinue}
+          suggestion={userSuggestion}
+          onChangeSuggestion={(e) => setUserSuggestion(e)}
         />
       )}
     </Grid>

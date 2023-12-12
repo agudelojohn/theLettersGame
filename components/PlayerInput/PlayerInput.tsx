@@ -55,6 +55,7 @@ export const PlayerInput: React.FC<Props> = ({
         sx={{ width: "100%" }}
         value={value}
         onChange={hanldleOnChangeValue}
+        autoComplete="off"
       />
       <TextField
         id="standard-basic"
@@ -63,6 +64,7 @@ export const PlayerInput: React.FC<Props> = ({
         sx={{ width: "100%" }}
         value={suggestion}
         onChange={hanldleOnChangeSuggestion}
+        autoComplete="off"
       />
       <Button
         variant="outlined"

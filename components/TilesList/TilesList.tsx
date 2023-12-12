@@ -187,6 +187,7 @@ export const TilesList: React.FC<Props> = ({
                 value={playerInput.value}
                 label="Try to guess..."
                 variant="filled"
+                autoComplete="off"
               />
             </Grid>
             <Grid item>

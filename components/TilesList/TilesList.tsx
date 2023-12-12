@@ -1,9 +1,9 @@
 import { Button, Grid, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Tile } from "../Tile/Tile";
 
 interface Props {
-  userInput: string;
+  wordToPlay: string;
   numberOfTries: number;
 }
 
@@ -13,57 +13,132 @@ interface ICharacter {
   value: string;
   isCorrect: boolean;
   isIncludeNotCorrect: boolean;
+  alreadySpinned: boolean;
 }
 
 const emptyCharacter: ICharacter = {
   value: "",
   isCorrect: false,
   isIncludeNotCorrect: false,
+  alreadySpinned: false,
 };
 
-export const TilesList: React.FC<Props> = ({ userInput, numberOfTries }) => {
-  const [playerInput, setPlayerInput] = useState<string>("");
+export const TilesList: React.FC<Props> = ({ wordToPlay, numberOfTries }) => {
+  const [playerInput, setPlayerInput] = useState<{
+    value: string;
+    index: number;
+  }>({ value: "", index: 0 });
   const [characters, setCharacters] = useState<string[]>([]);
-  const [tries, setTries] = useState<ITry[]>([]);
+  const [rowsOfTries, setRowsOfTries] = useState<ITry[]>([]);
+
   useEffect(() => {
     if (numberOfTries && characters) {
       const initialTries: ITry[] = [];
       for (let i = 0; i < numberOfTries; i++) {
         const newRow: ITry = [];
-        characters.forEach((char) => {
+        characters.forEach((char, i) => {
           newRow.push(emptyCharacter);
         });
         initialTries.push(newRow);
       }
-      setTries(initialTries);
+      setRowsOfTries(initialTries);
     }
   }, [numberOfTries, characters]);
 
   useEffect(() => {
-    if (userInput) {
+    if (wordToPlay) {
       let newCharactersList: string[] = [];
-      for (let i = 0; i <= userInput.length - 1; i++) {
-        newCharactersList.push(userInput.charAt(i));
+      for (let i = 0; i <= wordToPlay.length - 1; i++) {
+        newCharactersList.push(wordToPlay.charAt(i));
       }
       setCharacters(newCharactersList);
     }
-  }, [userInput]);
+  }, [wordToPlay]);
+
+  const getPreviousInput = () => {
+    return (
+      <Grid item sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
+        {characters &&
+          characters.map((char, index) => (
+            <Tile
+              key={`${index}-${char}-prev`}
+              letter={playerInput.value.charAt(index) ?? ""}
+              isCorrect={false}
+              isIncludeNotCorrect={false}
+              alreadySpinned={false}
+              handleAlreadySpinned={() => {}}
+            />
+          ))}
+      </Grid>
+    );
+  };
+
+  function handlePlayerInput(input: string) {
+    setPlayerInput((prev) => {
+      return { value: input, index: prev.index };
+    });
+  }
+
+  function handleCompareInput() {
+    const temporalRow: ICharacter[] = characters.map((char, index) => {
+      // 1. Compare characters
+      const playerInputChar = playerInput.value.charAt(index);
+      return {
+        value: playerInputChar,
+        isCorrect: playerInputChar === char,
+        isIncludeNotCorrect: characters.includes(playerInputChar),
+        alreadySpinned: false,
+      };
+    });
+    const newRow: ITry = temporalRow;
+    // 2. Add to rowsOfTries array
+    setRowsOfTries((prev) => {
+      let tempRowsOfTries: ITry[] = [...prev];
+      // let tempRowsOfTries = [...prev];
+      tempRowsOfTries = [
+        ...tempRowsOfTries.slice(0, playerInput.index),
+        newRow,
+        ...tempRowsOfTries.slice(playerInput.index, tempRowsOfTries.length - 1),
+      ];
+      return tempRowsOfTries;
+    });
+    setPlayerInput((prev) => {
+      return { value: "", index: prev.index + 1 };
+    });
+  }
+
+  function handleSpinner(i: number, j: number) {
+    rowsOfTries[i][j].alreadySpinned = true;
+  }
   return (
     <Grid container direction={"column"} sx={{ alignItems: "center", gap: 5 }}>
-      {tries &&
-        tries.map((singleTry) => (
-          <Grid item sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
-            {singleTry &&
-              singleTry.map((char, index) => (
-                <Tile
-                  key={`${index}-${char.value}`}
-                  letter={char.value}
-                  isCorrect={char.isCorrect}
-                  isIncludeNotCorrect={char.isIncludeNotCorrect}
-                />
-              ))}
-          </Grid>
+      {rowsOfTries &&
+        rowsOfTries.map((singleTry, i) => (
+          <Fragment key={`${i}-${Math.random()}`}>
+            {playerInput.index == i ? (
+              getPreviousInput()
+            ) : (
+              <Grid
+                key={`${i}`}
+                item
+                sx={{ display: "flex", flexDirection: "row", gap: 2 }}
+              >
+                {singleTry &&
+                  singleTry.map((char, index) => (
+                    <Tile
+                      key={`${index}-${char.value}`}
+                      letter={char.value}
+                      isCorrect={char.isCorrect}
+                      isIncludeNotCorrect={char.isIncludeNotCorrect}
+                      alreadySpinned={char.alreadySpinned}
+                      handleAlreadySpinned={() => handleSpinner(i, index)}
+                    />
+                  ))}
+              </Grid>
+            )}
+          </Fragment>
         ))}
+
       <Grid
         container
         direction={"row"}
@@ -71,14 +146,14 @@ export const TilesList: React.FC<Props> = ({ userInput, numberOfTries }) => {
       >
         <Grid item>
           <TextField
-            onChange={(e) => setPlayerInput(e.target.value)}
-            value={playerInput}
+            onChange={(e) => handlePlayerInput(e.target.value)}
+            value={playerInput.value}
             label="Try to guess..."
             variant="filled"
           />
         </Grid>
         <Grid item>
-          <Button onClick={() => setPlayerInput("")} variant="contained">
+          <Button onClick={() => handleCompareInput()} variant="contained">
             Go!
           </Button>
         </Grid>

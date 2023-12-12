@@ -12,20 +12,25 @@ interface Props {
   letter?: string;
   isCorrect: boolean;
   isIncludeNotCorrect: boolean;
+  alreadySpinned: boolean;
+  handleAlreadySpinned: () => void;
 }
 
 export const Tile: React.FC<Props> = ({
   letter,
   isIncludeNotCorrect,
   isCorrect,
+  alreadySpinned,
+  handleAlreadySpinned,
 }) => {
   const [currentColor, setCurrentColor] = useState(emptyColor);
+  const [innerIsCorrect, setInnerIsCorrect] = useState(false);
 
   function handleColor() {
-    const color = isIncludeNotCorrect
-      ? includedColor
-      : isCorrect
+    const color = isCorrect
       ? correctColor
+      : isIncludeNotCorrect
+      ? includedColor
       : letter
       ? originalColor
       : emptyColor;
@@ -35,6 +40,13 @@ export const Tile: React.FC<Props> = ({
   useEffect(() => {
     handleColor();
   }, [letter, isCorrect, isIncludeNotCorrect]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setInnerIsCorrect(isCorrect);
+      handleAlreadySpinned();
+    }, 100);
+  }, [isCorrect]);
 
   return (
     <Card
@@ -49,7 +61,9 @@ export const Tile: React.FC<Props> = ({
         alignItems: "center",
       }}
       variant="outlined"
-      className={`letterTile ${isCorrect ? "spinner" : ""}`}
+      className={`letterTile ${
+        innerIsCorrect && !alreadySpinned ? "spinner" : ""
+      }`}
     >
       <Typography
         variant="subtitle1"

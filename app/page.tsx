@@ -35,7 +35,7 @@ export default function Home() {
       }}
     >
       {userInput && isPlaying ? (
-        <TilesList userInput={userInput} numberOfTries={5} />
+        <TilesList wordToPlay={userInput} numberOfTries={5} />
       ) : (
         <PlayerInput
           value={userInput}

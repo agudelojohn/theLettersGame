@@ -1,0 +1,18 @@
+.text {
+  transition: font-size 1s ease-in-out;
+  color: #3919c7;
+  border: solid 5px #fff;
+  padding: 15px;
+  border-radius: 20px;
+}
+.bigText {
+  font-size: 70px;
+}
+
+.bigText {
+  font-size: 70px;
+}
+
+.smallText {
+  font-size: 30px;
+}

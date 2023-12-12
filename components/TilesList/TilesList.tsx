@@ -1,5 +1,5 @@
 import { Button, Grid, TextField } from "@mui/material";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Tile } from "../Tile/Tile";
 import { WinnerView } from "./WinnerView";
 
@@ -38,6 +38,8 @@ export const TilesList: React.FC<Props> = ({
   const [rowsOfTries, setRowsOfTries] = useState<ITry[]>([]);
   const [isWinner, setIsWinner] = useState(false);
 
+  const input = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     if (numberOfTries && characters) {
       const initialTries: ITry[] = [];
@@ -62,6 +64,10 @@ export const TilesList: React.FC<Props> = ({
     }
   }, [wordToPlay]);
 
+  useEffect(() => {
+    if (input.current) input.current.focus();
+  }, [playerInput]);
+
   const getPreviousInput = () => {
     return (
       <Grid item sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
@@ -82,7 +88,7 @@ export const TilesList: React.FC<Props> = ({
 
   function handlePlayerInput(input: string) {
     setPlayerInput((prev) => {
-      const regex = /^(?:[A-Za-z\s]*)$/;
+      const regex = /^(?:[A-Za-z\sñÑ]*)$/;
       if (!regex.test(input)) return prev;
       if (input.length > characters.length) return prev;
       return { value: input, index: prev.index };
@@ -90,6 +96,7 @@ export const TilesList: React.FC<Props> = ({
   }
 
   function handleCompareInput() {
+    if (characters.length > playerInput.value.length) return;
     const temporalRow: ICharacter[] = characters.map((char, index) => {
       // 1. Compare characters
       const playerInputChar = playerInput.value.charAt(index);
@@ -142,6 +149,10 @@ export const TilesList: React.FC<Props> = ({
       </Grid>
     );
   }
+
+  function handleKeyPress(event: React.KeyboardEvent<HTMLIFrameElement>) {
+    if (event.key === "Enter") handleCompareInput();
+  }
   return (
     <Grid container direction={"column"} sx={{ alignItems: "center", gap: 5 }}>
       {isWinner ? (
@@ -188,6 +199,8 @@ export const TilesList: React.FC<Props> = ({
                 label="Try to guess..."
                 variant="filled"
                 autoComplete="off"
+                inputRef={input}
+                onKeyDown={handleKeyPress}
               />
             </Grid>
             <Grid item>

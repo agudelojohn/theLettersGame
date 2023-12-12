@@ -29,6 +29,10 @@ export const PlayerInput: React.FC<Props> = ({
     if (onChangeSuggestion) onChangeSuggestion(event.target.value);
   }
 
+  function handleKeyPress(event: React.KeyboardEvent<HTMLIFrameElement>) {
+    if (event.key === "Enter") onClick();
+  }
+
   return (
     <Card
       sx={{
@@ -56,6 +60,7 @@ export const PlayerInput: React.FC<Props> = ({
         value={value}
         onChange={hanldleOnChangeValue}
         autoComplete="off"
+        onKeyDown={handleKeyPress}
       />
       <TextField
         id="standard-basic"
@@ -65,6 +70,7 @@ export const PlayerInput: React.FC<Props> = ({
         value={suggestion}
         onChange={hanldleOnChangeSuggestion}
         autoComplete="off"
+        onKeyDown={handleKeyPress}
       />
       <Button
         variant="outlined"

@@ -49,7 +49,7 @@ export const TilesList: React.FC<Props> = ({ wordToPlay, numberOfTries }) => {
     if (wordToPlay) {
       let newCharactersList: string[] = [];
       for (let i = 0; i <= wordToPlay.length - 1; i++) {
-        newCharactersList.push(wordToPlay.charAt(i));
+        newCharactersList.push(wordToPlay.charAt(i).toLocaleLowerCase());
       }
       setCharacters(newCharactersList);
     }
@@ -75,6 +75,9 @@ export const TilesList: React.FC<Props> = ({ wordToPlay, numberOfTries }) => {
 
   function handlePlayerInput(input: string) {
     setPlayerInput((prev) => {
+      const regex = /^(?:[A-Za-z\s]*)$/;
+      if (!regex.test(input)) return prev;
+      if (input.length > characters.length) return prev;
       return { value: input, index: prev.index };
     });
   }
@@ -153,7 +156,11 @@ export const TilesList: React.FC<Props> = ({ wordToPlay, numberOfTries }) => {
           />
         </Grid>
         <Grid item>
-          <Button onClick={() => handleCompareInput()} variant="contained">
+          <Button
+            onClick={() => handleCompareInput()}
+            variant="contained"
+            disabled={characters.length > playerInput.value.length}
+          >
             Go!
           </Button>
         </Grid>

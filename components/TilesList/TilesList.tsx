@@ -1,6 +1,7 @@
 import { Button, Grid, TextField } from "@mui/material";
 import { Fragment, useEffect, useState } from "react";
 import { Tile } from "../Tile/Tile";
+import { WinnerView } from "./WinnerView";
 
 interface Props {
   wordToPlay: string;
@@ -35,6 +36,7 @@ export const TilesList: React.FC<Props> = ({
   }>({ value: "", index: 0 });
   const [characters, setCharacters] = useState<string[]>([]);
   const [rowsOfTries, setRowsOfTries] = useState<ITry[]>([]);
+  const [isWinner, setIsWinner] = useState(false);
 
   useEffect(() => {
     if (numberOfTries && characters) {
@@ -102,7 +104,6 @@ export const TilesList: React.FC<Props> = ({
     // 2. Add to rowsOfTries array
     setRowsOfTries((prev) => {
       let tempRowsOfTries: ITry[] = [...prev];
-      // let tempRowsOfTries = [...prev];
       tempRowsOfTries = [
         ...tempRowsOfTries.slice(0, playerInput.index),
         newRow,
@@ -113,6 +114,12 @@ export const TilesList: React.FC<Props> = ({
     setPlayerInput((prev) => {
       return { value: "", index: prev.index + 1 };
     });
+
+    const correctLetters = newRow.filter((char) => char.isCorrect === true);
+    if (correctLetters.length === newRow.length)
+      setTimeout(() => {
+        setIsWinner(true);
+      }, 1000);
   }
 
   function handleSpinner(i: number, j: number) {
@@ -137,57 +144,63 @@ export const TilesList: React.FC<Props> = ({
   }
   return (
     <Grid container direction={"column"} sx={{ alignItems: "center", gap: 5 }}>
-      {suggestion && getSuggestion()}
-      {rowsOfTries &&
-        rowsOfTries.map((singleTry, i) => (
-          <Fragment key={`${i}-${Math.random()}`}>
-            {playerInput.index == i ? (
-              getPreviousInput()
-            ) : (
-              <Grid
-                key={`${i}`}
-                item
-                sx={{ display: "flex", flexDirection: "row", gap: 2 }}
-              >
-                {singleTry &&
-                  singleTry.map((char, index) => (
-                    <Tile
-                      key={`${index}-${char.value}`}
-                      letter={char.value}
-                      isCorrect={char.isCorrect}
-                      isIncludeNotCorrect={char.isIncludeNotCorrect}
-                      alreadySpinned={char.alreadySpinned}
-                      handleAlreadySpinned={() => handleSpinner(i, index)}
-                    />
-                  ))}
-              </Grid>
-            )}
-          </Fragment>
-        ))}
+      {isWinner ? (
+        <WinnerView />
+      ) : (
+        <>
+          {suggestion && getSuggestion()}
+          {rowsOfTries &&
+            rowsOfTries.map((singleTry, i) => (
+              <Fragment key={`${i}-${Math.random()}`}>
+                {playerInput.index == i ? (
+                  getPreviousInput()
+                ) : (
+                  <Grid
+                    key={`${i}`}
+                    item
+                    sx={{ display: "flex", flexDirection: "row", gap: 2 }}
+                  >
+                    {singleTry &&
+                      singleTry.map((char, index) => (
+                        <Tile
+                          key={`${index}-${char.value}`}
+                          letter={char.value}
+                          isCorrect={char.isCorrect}
+                          isIncludeNotCorrect={char.isIncludeNotCorrect}
+                          alreadySpinned={char.alreadySpinned}
+                          handleAlreadySpinned={() => handleSpinner(i, index)}
+                        />
+                      ))}
+                  </Grid>
+                )}
+              </Fragment>
+            ))}
 
-      <Grid
-        container
-        direction={"row"}
-        sx={{ justifyContent: "center", alignItems: "center", gap: 5 }}
-      >
-        <Grid item>
-          <TextField
-            onChange={(e) => handlePlayerInput(e.target.value)}
-            value={playerInput.value}
-            label="Try to guess..."
-            variant="filled"
-          />
-        </Grid>
-        <Grid item>
-          <Button
-            onClick={() => handleCompareInput()}
-            variant="contained"
-            disabled={characters.length > playerInput.value.length}
+          <Grid
+            container
+            direction={"row"}
+            sx={{ justifyContent: "center", alignItems: "center", gap: 5 }}
           >
-            Go!
-          </Button>
-        </Grid>
-      </Grid>
+            <Grid item>
+              <TextField
+                onChange={(e) => handlePlayerInput(e.target.value)}
+                value={playerInput.value}
+                label="Try to guess..."
+                variant="filled"
+              />
+            </Grid>
+            <Grid item>
+              <Button
+                onClick={() => handleCompareInput()}
+                variant="contained"
+                disabled={characters.length > playerInput.value.length}
+              >
+                Go!
+              </Button>
+            </Grid>
+          </Grid>
+        </>
+      )}
     </Grid>
   );
 };

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import "./tile.css";
 
 const originalColor = "#5b88a5";
-const emptyColor = "#ced7ec";
+const emptyColor = "#928888";
 const includedColor = "#e7ba43";
 const correctColor = "#279719";
 

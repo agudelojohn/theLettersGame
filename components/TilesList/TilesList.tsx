@@ -142,6 +142,8 @@ export const TilesList: React.FC<Props> = ({
           borderRadius: "25px",
           width: "80%",
           textAlign: "center",
+          color: "#FFF",
+          fontFamily: "sans-serif",
         }}
       >
         <h2>If you want to succeed, try to think in:</h2>

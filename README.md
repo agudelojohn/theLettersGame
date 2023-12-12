@@ -1,6 +1,6 @@
 # theLettersGame
 
-TODO:
+This is a small project to create a fun game to improve my skills in JS, NextJS and CSS. Just for fun...
 
 V1 - NPM
 
